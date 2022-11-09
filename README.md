@@ -15,12 +15,17 @@ Ushark requires a linux-based distribution in order to be built.
 Ushark depends on some Wireshark static libraries. The exposed functions are not part of an official API, so they may change in future Wireshark releases.
 
 To build Wireshark as needed by ushark, set up the environment as described [here](https://www.wireshark.org/docs/wsdg_html_chunked/ChapterSetup#ChSetupUNIX).
-For archlinux, you can find the necessary libraries in the [wireshark-git PKGBUILD](https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=wireshark-git).
+
+For archlinux, you can find some of the necessary libraries in the [wireshark-git PKGBUILD](https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=wireshark-git) (replace `qt5` with `qt6`).
+You will also need to install `qt6-5compat`.
 
 Then run:
 
 ```
+# The wireshark source should be cloned at ../wireshark
+cd ..
 git clone https://github.com/wireshark/wireshark
+
 cd wireshark
 git checkout 85a9e05c
 
