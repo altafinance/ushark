@@ -1,5 +1,5 @@
 const pcap = require('pcap');
-const ushark = require('./ushark');
+const ushark = require('./index');
 
 const pcap_path = process.argv[2];
 const keylog_path = process.argv[3];

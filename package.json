@@ -2,7 +2,7 @@
   "name": "ushark",
   "version": "0.0.1",
   "description": "Wireshark dissection for Nodejs",
-  "main": "pcap_example.js",
+  "main": "index.js",
   "scripts": {},
   "author": "altafinance",
   "license": "GPL-2.0-or-later",
