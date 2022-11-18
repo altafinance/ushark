@@ -132,7 +132,6 @@ struct ushark {
     wtap_rec rec;
     Buffer buf;
     json_dumper jdumper;
-    gboolean jdumper_finalized;
     GString *json_output;
     gint64 data_offset;
 
@@ -229,12 +228,11 @@ ushark_epan_new()
 
 // like write_json_preamble, but write json to string
 static json_dumper
-write_json_preamble_to_str(GString *s) {
+init_json_to_str(GString *s) {
     json_dumper dumper = {
         .output_string = s,
         .flags = JSON_DUMPER_FLAGS_PRETTY_PRINT
     };
-    json_dumper_begin_array(&dumper);
     return dumper;
 }
 
@@ -487,25 +485,15 @@ ushark_new(int pcap_encap, const char *dfilter)
     /* Init JSON dumper */
     sk->output_fields = output_fields_new();
     sk->json_output = g_string_sized_new(0);
-    sk->jdumper = write_json_preamble_to_str(sk->json_output);
+    sk->jdumper = init_json_to_str(sk->json_output);
 
     return sk;
-}
-
-static void
-finalize_jdumper(ushark_t *sk)
-{
-    if (sk->jdumper_finalized)
-        return;
-
-    write_json_finale(&sk->jdumper);
-    sk->jdumper_finalized = TRUE;
 }
 
 void
 ushark_destroy(ushark_t *sk)
 {
-    finalize_jdumper(sk);
+    json_dumper_finish(&sk->jdumper);
     g_string_free(sk->json_output, TRUE);
     output_fields_free(sk->output_fields);
 
@@ -575,6 +563,9 @@ process_packet_single_pass(ushark_t *sk, capture_file *cf, epan_dissect_t *edt, 
     if (passed) {
         frame_data_set_after_dissect(&fdata, &sk->fdata.cum_bytes);
 
+        // we want to return the JSON of each individual packet
+        g_string_truncate(sk->json_output, 0);
+
         // print_packet(cf, edt);
         write_json_proto_tree(sk->output_fields, TRUE /* print_dissections_expanded */,
                         FALSE /* print_hex */, NULL /* protocolfilter */, PF_NONE /* protocolfilter_flags */,
@@ -595,20 +586,16 @@ process_packet_single_pass(ushark_t *sk, capture_file *cf, epan_dissect_t *edt, 
     return passed;
 }
 
-// see capture_input_new_packets
-void
+// returns true if packet was processed, false otherwise
+const char *
 ushark_dissect(ushark_t *sk, const u_char *pkt, const struct pcap_pkthdr *hdr)
 {
+    // see capture_input_new_packets
     int err;
     gchar *err_info;
     gint64 data_offset;
     capture_file *cf = &sk->cfile;
     epan_dissect_t *edt = sk->edt;
-
-    if (sk->jdumper_finalized) {
-        ws_warning("dissection has stopped (json already dumped)");
-        return;
-    }
 
     // NOTE: **THIS MAKES ushark_dissect NON-REENTRANT**
     g_epan->prov = &cf->provider;
@@ -620,13 +607,8 @@ ushark_dissect(ushark_t *sk, const u_char *pkt, const struct pcap_pkthdr *hdr)
     gboolean ret = wtap_read(cf->provider.wth, &sk->rec, &sk->buf, &err, &err_info, &data_offset);
     ws_assert(ret);
 
-    process_packet_single_pass(sk, cf, edt, data_offset, &sk->rec, &sk->buf, TL_REQUIRES_NOTHING);
-}
+    if(process_packet_single_pass(sk, cf, edt, data_offset, &sk->rec, &sk->buf, TL_REQUIRES_NOTHING))
+        return sk->json_output->str;
 
-const char *
-ushark_get_json(ushark_t *sk)
-{
-    finalize_jdumper(sk);
-
-    return sk->json_output->str;
+    return NULL;
 }

@@ -18,9 +18,7 @@ const link_type = ushark[pcap_session.link_type] || ushark.LINKTYPE_RAW;
 const dissector = new ushark.Dissector(link_type, dfilter);
 
 pcap_session.on('packet', (pkt) => {
-  dissector.dissect(pkt.buf, pkt.header);
-});
-
-pcap_session.on('complete', () => {
-  console.log(dissector.json());
+  const json = dissector.dissect(pkt.buf, pkt.header);
+  if(json)
+    console.log(json);
 });

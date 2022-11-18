@@ -21,7 +21,8 @@ Dissector::~Dissector() {
     ushark_destroy(sk);
 }
 
-void Dissector::dissect(const Napi::CallbackInfo &info) {
+Napi::Value Dissector::dissect(const Napi::CallbackInfo &info) {
+    Napi::Env env = info.Env();
     auto pkt = info[0].As<const Napi::Buffer<uint8_t>>();
     auto hdr = info[1].As<const Napi::Buffer<uint8_t>>();
 
@@ -36,13 +37,10 @@ void Dissector::dissect(const Napi::CallbackInfo &info) {
     memcpy(&pkthdr.caplen,      hbuf + 8, 4);
     memcpy(&pkthdr.len,         hbuf + 12, 4);
 
-    ushark_dissect(sk, pkt.Data(), &pkthdr);
-}
-
-Napi::Value Dissector::dumpJson(const Napi::CallbackInfo &info) {
-    Napi::Env env = info.Env();
-
-    return Napi::String::New(env, ushark_get_json(sk));
+    auto json = ushark_dissect(sk, pkt.Data(), &pkthdr);
+    if(json)
+        return Napi::String::New(env, json);
+    return env.Null();
 }
 
 Napi::Object Dissector::Init(Napi::Env env, Napi::Object exports) {
@@ -51,8 +49,7 @@ Napi::Object Dissector::Init(Napi::Env env, Napi::Object exports) {
             // Properties
             // https://github.com/nodejs/node-addon-api/blob/main/doc/class_property_descriptor.md
             InstanceAccessor<&Dissector::getLinkLayerType>("link_type"),
-            InstanceMethod("dissect", &Dissector::dissect),
-            InstanceMethod("json", &Dissector::dumpJson)
+            InstanceMethod("dissect", &Dissector::dissect)
     });
 
     // https://github.com/nodejs/node-addon-api/blob/main/doc/object_wrap.md

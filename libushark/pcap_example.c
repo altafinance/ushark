@@ -6,7 +6,9 @@
 static void handle_pkt(u_char *user, const struct pcap_pkthdr *hdr, const u_char *buf) {
     ushark_t *sk = (ushark_t*) user;
 
-    ushark_dissect(sk, buf, hdr);
+    const char *json = ushark_dissect(sk, buf, hdr);
+    if(json)
+        puts(json);
 }
 
 int main(int argc, char **argv) {
@@ -34,9 +36,6 @@ int main(int argc, char **argv) {
 
     ushark_t *sk = ushark_new(pcap_datalink(pd), dfilter);
     pcap_loop(pd, 0, handle_pkt, (u_char*)sk);
-
-    // print JSON
-    puts(ushark_get_json(sk));
 
     ushark_destroy(sk);
     ushark_cleanup();

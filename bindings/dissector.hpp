@@ -13,8 +13,7 @@ public:
 
     Dissector(const Napi::CallbackInfo &info);
     ~Dissector();
-    void dissect(const Napi::CallbackInfo &info);
-    Napi::Value dumpJson(const Napi::CallbackInfo &info);
+    Napi::Value dissect(const Napi::CallbackInfo &info);
 
 private:
     struct ushark *sk;

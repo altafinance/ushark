@@ -11,7 +11,6 @@ void ushark_cleanup();
 ushark_t* ushark_new(int pcap_encap, const char *dfilter);
 void ushark_destroy(ushark_t *sk);
 void ushark_set_pref(const char *name, const char *val);
-void ushark_dissect(ushark_t *sk, const unsigned char *buf, const struct pcap_pkthdr *hdr);
-const char* ushark_get_json(ushark_t *sk);
+const char* ushark_dissect(ushark_t *sk, const unsigned char *buf, const struct pcap_pkthdr *hdr);
 
 #endif
