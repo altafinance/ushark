@@ -266,6 +266,40 @@ ushark_set_pref(const char *name, const char *val)
     }
 }
 
+static gboolean
+_compile_dfilter(const char *text, dfilter_t **dfp, const char *caller)
+{
+    gboolean ok;
+    dfilter_loc_t err_loc;
+    char *err_msg = NULL;
+    char *err_off;
+    char *expanded;
+
+    expanded = dfilter_expand(text, &err_msg);
+    if (expanded == NULL) {
+        g_warning("%s", err_msg);
+        g_free(err_msg);
+        return FALSE;
+    }
+
+    ok = dfilter_compile_real(expanded, dfp, &err_msg, &err_loc, caller, FALSE, FALSE);
+    if (!ok ) {
+        g_warning("%s", err_msg);
+        g_free(err_msg);
+        if (err_loc.col_start >= 0) {
+            err_off = ws_strdup_underline(NULL, err_loc.col_start, err_loc.col_len);
+            g_warning("    %s", expanded);
+            g_warning("    %s", err_off);
+            g_free(err_off);
+        }
+    }
+
+    g_free(expanded);
+    return ok;
+}
+
+#define compile_dfilter(text, dfp)      _compile_dfilter(text, dfp, __func__)
+
 /*
  * Sequential read with offset reporting.
  * Read the next frame in the file and adjust for the multiframe size
@@ -417,7 +451,7 @@ ushark_cleanup()
 }
 
 ushark_t*
-ushark_new(int pcap_encap)
+ushark_new(int pcap_encap, const char *dfilter)
 {
     ws_assert(init_done());
 
@@ -444,6 +478,11 @@ ushark_new(int pcap_encap)
     /* Init packet buffers */
     wtap_rec_init(&sk->rec);
     ws_buffer_init(&sk->buf, 1514);
+
+    if(dfilter && *dfilter) {
+        if(!compile_dfilter(dfilter, &cf->dfcode))
+            ws_warning("invalid display filter will be ignored");
+    }
 
     /* Init JSON dumper */
     sk->output_fields = output_fields_new();
@@ -476,6 +515,9 @@ ushark_destroy(ushark_t *sk)
 
     col_cleanup(&sk->cfile.cinfo);
     wtap_close(sk->cfile.provider.wth);
+
+    if(sk->cfile.dfcode)
+        dfilter_free(sk->cfile.dfcode);
 
     // NOTE: sk is freed by wtap_close (wth->priv)
     //g_free(sk);
@@ -578,9 +620,7 @@ ushark_dissect(ushark_t *sk, const u_char *pkt, const struct pcap_pkthdr *hdr)
     gboolean ret = wtap_read(cf->provider.wth, &sk->rec, &sk->buf, &err, &err_info, &data_offset);
     ws_assert(ret);
 
-    ret = process_packet_single_pass(sk, cf, edt, data_offset, &sk->rec, &sk->buf, TL_REQUIRES_NOTHING);
-    if (!ret)
-        ws_warning("packet processing failed");
+    process_packet_single_pass(sk, cf, edt, data_offset, &sk->rec, &sk->buf, TL_REQUIRES_NOTHING);
 }
 
 const char *

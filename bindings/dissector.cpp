@@ -8,9 +8,13 @@ extern "C" {
 Dissector::Dissector(const Napi::CallbackInfo& info) :
         Napi::ObjectWrap<Dissector>(info) {
     auto value = info[0].As<Napi::Number>();
+    std::string dfilter;
+
+    if((info.Length() > 1) && info[1].IsString())
+        dfilter = info[1].As<Napi::String>().Utf8Value();
 
     linkLayerType = value.Uint32Value();
-    sk = ushark_new(linkLayerType);
+    sk = ushark_new(linkLayerType, dfilter.c_str());
 }
 
 Dissector::~Dissector() {
