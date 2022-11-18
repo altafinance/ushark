@@ -9,7 +9,7 @@
   "dependencies": {
     "pcap": "^3.1.0"
   },
-  "gypfile": false,
+  "gypfile": true,
   "devDependencies": {
     "node-addon-api": "^5.0.0"
   },

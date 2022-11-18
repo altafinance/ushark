@@ -3,10 +3,12 @@
     {
       "target_name": "ushark",
       "variables": {
-        "wireshark": "<(module_root_dir)/../wireshark",
-        "wlibs": "<(wireshark)/build/run",
+        "wireshark": "<(module_root_dir)/wireshark-static",
+        "wlibs": "<(wireshark)/libs",
       },
       "sources": [
+        "libushark/ushark.c",
+        "wireshark-static/frame_tvbuff.c",
         "bindings/dissector.cpp",
         "bindings/bindings.cpp"
       ],
@@ -22,7 +24,6 @@
         "<!@(pkgconf --cflags gmodule-2.0 gnutls libgcrypt)"
       ],
       "libraries": [
-        "<(module_root_dir)/libushark/libushark.a",
         "<(wlibs)/libwireshark.a",
         "<(wlibs)/libcaputils.a",
         "<(wlibs)/libwiretap.a",
