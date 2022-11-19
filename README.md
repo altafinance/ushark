@@ -12,7 +12,7 @@ Ushark is developed for Ubuntu 22.04, but should run on recent linux distributio
 
 Ushark depends on some Wireshark static libraries. The exposed functions are not part of an official API, so they may change in future Wireshark releases.
 
-This pre-built Wireshark static libraries for linux x64 are provided in the [wireshark-static](https://github.com/altafinance/wireshark-static) submodule.
+This pre-built Wireshark static libraries for linux x64 are provided in the [wireshark-static](https://github.com/altafinance/wireshark-static) submodule (**note** it requires [git-lfs](https://git-lfs.github.com)).
 
 ## Using ushark
 
