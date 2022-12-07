@@ -2,11 +2,12 @@ Ushark is a native module which brings the Wireshark dissection to Nodejs apps.
 
 Internally ushark uses the unofficial Wireshark API and it's linked against its static libraries.
 
-Ushark currently supports:
-	- linux x64 - built for Ubuntu 22.04
-	- darwin-arm64 - built for macOS 12
-
 ## Using ushark
+
+Ushark currently supports:
+
+- linux x64 - built for Ubuntu 22.04
+- darwin-arm64 - built for macOS 12
 
 The ushark module can be installed as a normal node module. `node-pre-gyp-github` installs the pre-built binaries for the specific OS and architecture.
 To build and run on unsupported platforms, see "Building the Wireshark libs" and "Building the binary module" below.
@@ -57,7 +58,7 @@ make -j$(nproc) tshark
 
 The built Wireshark static libraries will be located in `build/run`.
 
-## Building the binary module
+## Building the Binary Module
 
 After building the wireshark static libraries, the binary node module can be built with:
 
