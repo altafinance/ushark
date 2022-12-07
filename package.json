@@ -3,15 +3,29 @@
   "version": "0.0.1",
   "description": "Wireshark dissection for Nodejs",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "install": "node-pre-gyp install --fallback-to-build"
+  },
   "author": "altafinance",
   "license": "GPL-2.0-or-later",
   "dependencies": {
+    "@mapbox/node-pre-gyp": "^1.0.10",
+    "@mmomtchev/node-pre-gyp-github": "^2.0.6",
     "pcap": "^3.1.0"
   },
-  "gypfile": true,
   "devDependencies": {
     "node-addon-api": "^5.0.0"
+  },
+  "gypfile": true,
+  "binary": {
+    "module_name": "ushark",
+    "module_path": "./lib/binding/napi-v{napi_build_version}",
+    "remote_path": "{version}",
+    "package_name": "{platform}-{arch}-napi-v{napi_build_version}.tar.gz",
+    "host": "https://github.com/altafinance/ushark/releases/download/",
+    "napi_versions": [
+      6
+    ]
   },
   "repository": {
     "type": "git",

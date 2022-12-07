@@ -4,3 +4,5 @@ package-lock.json
 *.a
 /build
 libushark/pcap_example
+build-tmp-napi-v*
+/lib

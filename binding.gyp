@@ -19,7 +19,10 @@
         "<(wireshark)/include",
         "<(wireshark)/build"
       ],
-      "defines": [ 'NAPI_DISABLE_CPP_EXCEPTIONS' ],
+      "defines": [
+        'NAPI_DISABLE_CPP_EXCEPTIONS',
+        "NAPI_VERSION=<(napi_build_version)"
+      ],
       "cflags": [
         "<!@(pkgconf --cflags gmodule-2.0 gnutls libgcrypt)"
       ],
@@ -33,6 +36,16 @@
         "<!@(pkgconf --libs glib-2.0 gmodule-2.0 gnutls libgcrypt libpcre2-8 zlib libbrotlidec \
           libzstd gpg-error liblz4 libnghttp2 libcares snappy libpcap) -lm"
       ],
+    }, {
+      "target_name": "action_after_build",
+      "type": "none",
+      "dependencies": [ "<(module_name)" ],
+      "copies": [
+        {
+          "files": [ "<(PRODUCT_DIR)/<(module_name).node" ],
+          "destination": "<(module_path)"
+        }
+      ]
     }
   ]
 }
