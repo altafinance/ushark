@@ -2,7 +2,16 @@ Ushark is a native module which brings the Wireshark dissection to Nodejs apps.
 
 Internally ushark uses the unofficial Wireshark API and it's linked against its static libraries.
 
-Ushark is developed for Ubuntu 22.04, but should run on recent linux distributions.
+Ushark currently supports:
+	- linux x64 - built for Ubuntu 22.04
+	- darwin-arm64 - built for macOS 12
+
+## Using ushark
+
+The ushark module can be installed as a normal node module. `node-pre-gyp-github` installs the pre-built binaries for the specific OS and architecture.
+To build and run on unsupported platforms, see "Building the Wireshark libs" and "Building the binary module" below.
+
+You can run `node pcap_example.js` to see the native module in action.
 
 ## Code Structure
 
@@ -12,17 +21,7 @@ Ushark is developed for Ubuntu 22.04, but should run on recent linux distributio
 
 Ushark depends on some Wireshark static libraries. The exposed functions are not part of an official API, so they may change in future Wireshark releases.
 
-This pre-built Wireshark static libraries for linux x64 are provided in the [wireshark-static](https://github.com/altafinance/wireshark-static) submodule (**note** it requires [git-lfs](https://git-lfs.github.com)).
-
-## Using ushark
-
-The ushark module can be built by sunning `npm install`.
-
-You can run `node pcap_example.js` to see the native module in action.
-
-## Building Wireshark libs
-
-The static libraries of the [wireshark-static](https://github.com/altafinance/wireshark-static) submodule can be built as follows.
+## Building the Wireshark libs
 
 First of all, set up the environment as described [here](https://www.wireshark.org/docs/wsdg_html_chunked/ChapterSetup#ChSetupUNIX).
 
@@ -33,6 +32,8 @@ apt install build-essential cmake flex libglib2.0-dev libgnutls28-dev libgcrypt2
   libpcre2-dev zlib1g-dev libbrotli-dev libzstd-dev libgpg-error-dev liblz4-dev\
   libnghttp2-dev libc-ares-dev libsnappy-dev libpcap-dev
 ```
+
+On macOS, you can run `tools/macos-setup.sh` to install all the dependencies.
 
 To build the static libraries, run:
 
@@ -55,3 +56,17 @@ make -j$(nproc) tshark
 ```
 
 The built Wireshark static libraries will be located in `build/run`.
+
+## Building the binary module
+
+After building the wireshark static libraries, the binary node module can be built with:
+
+```
+npm install --build-from-source
+```
+
+(optional) To build the `tar.gz` containing the binary module for the release, run:
+
+```
+make package
+```

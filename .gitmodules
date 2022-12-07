@@ -1,3 +1,0 @@
-[submodule "wireshark-static"]
-	path = wireshark-static
-	url = https://github.com/altafinance/wireshark-static
