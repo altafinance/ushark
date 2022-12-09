@@ -14,7 +14,7 @@ To build and run on unsupported platforms, see "Building the Wireshark libs" and
 
 You can run `node pcap_example.js` to see the native module in action.
 
-## Code Structure
+## Code structure
 
 - The `libushark` folder contains the usark C API and can be used to build native programs (see `libushark/pcap_example.c`).
 - The Nodejs module interface is implemented in the `bindings` folder via the [node-addon-api](https://github.com/nodejs/node-addon-api).
@@ -58,7 +58,7 @@ make -j$(nproc) tshark
 
 The built Wireshark static libraries will be located in `build/run`.
 
-## Building the Binary Module
+## Building the binary module
 
 After building the wireshark static libraries, the binary node module can be built with:
 
@@ -70,4 +70,14 @@ npm install --build-from-source
 
 ```
 make package
+```
+
+NOTE: on Ubuntu 22.04, use node 19 for packaging, to avoid adding a runtime reference to `libnode`:
+
+```
+install nvm and node 19
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
+source ~/.bashrc
+nvm install 19
+nvm use 19
 ```
