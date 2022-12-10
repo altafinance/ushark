@@ -56,7 +56,7 @@ process_bin(module)
 os.makedirs(output_path, exist_ok=True)
 
 if sys.platform == "darwin":
-    # cleanup necessary on macos before overwrite
+    # the .dylib files cannot be overwritten, must be deleted
     for f in glob.glob(output_path + "/*.dylib"):
         os.remove(f)
 
@@ -72,8 +72,13 @@ for dep in all_deps:
     shutil.copy2(dep, output_path)
 
     if sys.platform == "darwin":
-        # https://stackoverflow.com/questions/66268814/dyld-library-not-loaded-how-to-correctly-tell-gcc-compiler-where-to-find/66284977#66284977
-        # https://developer.apple.com/documentation/xcode/embedding-nonstandard-code-structures-in-a-bundle
+        # Changing a library path into a module requires two steps:
+        #   1. change the library id (install_name_tool -id)
+        #   2. change the library path in the module (install_name_tool -change)
+        # See:
+        #   https://stackoverflow.com/questions/66268814/dyld-library-not-loaded-how-to-correctly-tell-gcc-compiler-where-to-find/66284977#66284977
+        #   https://developer.apple.com/documentation/xcode/embedding-nonstandard-code-structures-in-a-bundle
+        # NOTE: the code signatures of the libs are invalidated by this operation
 
         #subprocess.run(['codesign', '--remove-signature', output_path + '/' + libname])
         subprocess.run(['install_name_tool', '-id', '@rpath/' + libname, output_path + '/' + libname])
@@ -84,7 +89,7 @@ if sys.platform == "darwin":
     print(f"fix dependencies paths")
 
     for mod, deps in modules_deps.items():
-		print(f"  + {mod}")
+        print(f"  + {mod}")
 
         for dep in deps:
             libname = os.path.basename(dep)

@@ -47,23 +47,23 @@
         ["OS==\"mac\"",
           {
             "link_settings": {
-							"libraries": [
-								"-Wl,-rpath,@loader_path",
+              "libraries": [
+                "-Wl,-rpath,@loader_path",
                 "-Wl,-rpath,@loader_path/..",
-							],
-						 }
-					}
-				],
-				["OS==\"linux\"",
-					{
-						"link_settings": {
-							"libraries": [
-								"-Wl,-rpath,'$$ORIGIN'",
+              ],
+             }
+          }
+        ],
+        ["OS==\"linux\"",
+          {
+            "link_settings": {
+              "libraries": [
+                "-Wl,-rpath,'$$ORIGIN'",
                 "-Wl,-rpath,'$$ORIGIN'/.."
-							],
-						}
-					}
-				]
+              ],
+            }
+          }
+        ]
       ],
     }, {
       "target_name": "action_after_build",

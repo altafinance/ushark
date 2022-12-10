@@ -46,12 +46,15 @@ git clone https://github.com/wireshark/wireshark
 cd wireshark
 git checkout 85a9e05c
 
+# Disable any additional feature, we will manually enable what we need
+sed -E -i 's/option\(BUILD_(.*) ON\)/option\(BUILD_\1 OFF\)/g' CMakeOptions.txt
+sed -E -i 's/option\(ENABLE_(.*) ON\)/option\(ENABLE_\1 OFF\)/g' CMakeOptions.txt
+
 mkdir build
 cd build
-cmake -DENABLE_STATIC=ON -DBUILD_wireshark=OFF -DENABLE_LUA=OFF -DENABLE_CAP=OFF -DENABLE_KERBEROS=OFF\
-  -DENABLE_SBC=OFF -DENABLE_SPANDSP=OFF -DENABLE_BCG729=OFF -DENABLE_ILBC=OFF\
-  -DENABLE_LIBXML2=OFF -DENABLE_OPUS=OFF -DENABLE_SINSP=OFF -DENABLE_NETLINK=OFF\
-  -DENABLE_PLUGINS=OFF -DENABLE_AIRPCAP=OFF -DENABLE_SMI=OFF ..
+cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_STATIC=ON -DENABLE_WERROR=ON\
+	-DENABLE_ZLIB=ON -DENABLE_LZ4=ON -DENABLE_BROTLI=ON -DENABLE_ZSTD=ON\
+	-DENABLE_NGHTTP2=ON -DENABLE_GNUTLS=ON -DBUILD_tshark=ON ..
 
 make -j$(nproc) tshark
 ```
