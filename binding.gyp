@@ -24,11 +24,9 @@
         "NAPI_VERSION=<(napi_build_version)"
       ],
       "xcode_settings": {  # These are required for macOS
-		"OTHER_CFLAGS": [
-		  "<!@(pkg-config --cflags gmodule-2.0 gnutls libgcrypt glib-2.0)"
-        ],
-        "OTHER_LDFLAGS": [
-          "-L/opt/homebrew/Cellar/snappy/1.1.9/lib"
+        "MACOSX_DEPLOYMENT_TARGET": "12.0",
+        "OTHER_CFLAGS": [
+          "<!@(pkg-config --cflags gmodule-2.0 gnutls libgcrypt glib-2.0)"
         ]
       },
       "cflags": [
@@ -43,16 +41,40 @@
         "<(wlibs)/libwsutil.a",
         "<(wlibs)/libui.a",
         "<!@(pkg-config --libs glib-2.0 gmodule-2.0 gnutls libgcrypt libpcre2-8 zlib libbrotlidec \
-          libzstd gpg-error liblz4 libnghttp2 libcares) -lm -lpcap -lsnappy"
+          libzstd gpg-error liblz4 libnghttp2 libcares) -lm"
+      ],
+      "conditions": [
+        ["OS==\"mac\"",
+          {
+            "link_settings": {
+							"libraries": [
+								"-Wl,-rpath,@loader_path",
+                "-Wl,-rpath,@loader_path/..",
+							],
+						 }
+					}
+				],
+				["OS==\"linux\"",
+					{
+						"link_settings": {
+							"libraries": [
+								"-Wl,-rpath,'$$ORIGIN'",
+                "-Wl,-rpath,'$$ORIGIN'/.."
+							],
+						}
+					}
+				]
       ],
     }, {
       "target_name": "action_after_build",
       "type": "none",
       "dependencies": [ "<(module_name)" ],
-      "copies": [
+      "actions": [
         {
-          "files": [ "<(PRODUCT_DIR)/<(module_name).node" ],
-          "destination": "<(module_path)"
+          "action_name": "bundle_deps",
+          "inputs": ["./tools/bundle_deps.py", "<(PRODUCT_DIR)/<(module_name).node"],
+          "outputs": ["ignore_this_part"],
+          "action": ["python3", "./tools/bundle_deps.py", "<(PRODUCT_DIR)/<(module_name).node", "<(module_path)"]
         }
       ]
     }

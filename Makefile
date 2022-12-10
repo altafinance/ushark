@@ -4,7 +4,7 @@ build/Release/ushark.node: libushark/ushark.c libushark/ushark.h binding.gyp $(s
 	node-gyp configure
 	node-gyp rebuild --verbose
 
-package:
+package: clean
 	npm install --ignore-scripts
 	./node_modules/.bin/node-pre-gyp configure
 	./node_modules/.bin/node-pre-gyp build
