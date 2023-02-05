@@ -8,6 +8,7 @@ Ushark currently supports:
 
 - linux x64 - built for Ubuntu 22.04
 - darwin-arm64 - built for macOS 12
+- darwin-x64-napi - built for macOS 13
 
 The ushark module can be installed as a normal node module. `node-pre-gyp-github` installs the pre-built binaries for the specific OS and architecture.
 To build and run on unsupported platforms, see "Building the Wireshark libs" and "Building the binary module" below.
@@ -34,7 +35,7 @@ apt install build-essential cmake flex libglib2.0-dev libgnutls28-dev libgcrypt2
   libnghttp2-dev libc-ares-dev libsnappy-dev libpcap-dev
 ```
 
-On macOS, you can run `tools/macos-setup.sh` to install all the dependencies.
+On macOS, you can run `tools/macos-setup.sh` to install all the dependencies (NOTE: comment `install_minizip` or build will fail).
 
 To build the static libraries, run:
 
@@ -47,6 +48,7 @@ cd wireshark
 git checkout 85a9e05c
 
 # Disable any additional feature, we will manually enable what we need
+# On macOs, replace "-i" with "-i '' -e"
 sed -E -i 's/option\(BUILD_(.*) ON\)/option\(BUILD_\1 OFF\)/g' CMakeOptions.txt
 sed -E -i 's/option\(ENABLE_(.*) ON\)/option\(ENABLE_\1 OFF\)/g' CMakeOptions.txt
 
