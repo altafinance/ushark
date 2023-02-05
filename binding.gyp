@@ -40,7 +40,7 @@
         "<(wlibs)/libversion_info.a",
         "<(wlibs)/libwsutil.a",
         "<(wlibs)/libui.a",
-        "<!@(pkg-config --libs glib-2.0 gmodule-2.0 gnutls libgcrypt libpcre2-8 zlib libbrotlidec \
+        "<!@(pkg-config --libs glib-2.0 gmodule-2.0 gnutls libgcrypt libpcre2-8 libbrotlidec \
           libzstd gpg-error liblz4 libnghttp2 libcares) -lm"
       ],
       "conditions": [

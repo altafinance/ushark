@@ -7,8 +7,8 @@ Internally ushark uses the unofficial Wireshark API and it's linked against its 
 Ushark currently supports:
 
 - linux x64 - built for Ubuntu 22.04
-- darwin-arm64 - built for macOS 12
-- darwin-x64-napi - built for macOS 13
+- darwin arm64 - built for macOS 12
+- darwin x64 - built for macOS 13
 
 The ushark module can be installed as a normal node module. `node-pre-gyp-github` installs the pre-built binaries for the specific OS and architecture.
 To build and run on unsupported platforms, see "Building the Wireshark libs" and "Building the binary module" below.
