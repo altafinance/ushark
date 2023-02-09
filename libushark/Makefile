@@ -1,7 +1,7 @@
 .PHONY: clean
 
-WIRESHARK := ../wireshark-static
-WLIBS := $(WIRESHARK)/libs
+WIRESHARK := ../../wireshark
+WLIBS := $(WIRESHARK)/build/run
 
 CFLAGS := -g -O0 -I$(WIRESHARK) -I$(WIRESHARK)/include -I$(WIRESHARK)/build \
 	`pkgconf --cflags gmodule-2.0 gnutls libgcrypt`
