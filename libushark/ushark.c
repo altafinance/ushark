@@ -502,13 +502,11 @@ ushark_destroy(ushark_t *sk)
     ws_buffer_free(&sk->buf);
 
     col_cleanup(&sk->cfile.cinfo);
-    wtap_close(sk->cfile.provider.wth);
-
     if(sk->cfile.dfcode)
         dfilter_free(sk->cfile.dfcode);
 
-    // NOTE: sk is freed by wtap_close (wth->priv)
-    //g_free(sk);
+    // NOTE: wtap_close frees sk (wth->priv)
+    wtap_close(sk->cfile.provider.wth);
 }
 
 // from tshark
